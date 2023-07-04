@@ -5,20 +5,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animated_icons/icons8.dart';
 import 'package:flutter_animated_icons/lordicon.dart';
 import 'package:flutter_animated_icons/lottiefiles.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
+import 'package:rate_your_self/auth/repo/auth_repo.dart';
 
-class SignInView extends StatefulWidget {
+class SignInView extends ConsumerStatefulWidget {
   const SignInView({super.key});
 
   @override
-  State<SignInView> createState() => _SignInViewState();
+  ConsumerState<SignInView> createState() => _SignInViewState();
 }
 
-class _SignInViewState extends State<SignInView> {
+class _SignInViewState extends ConsumerState<SignInView> {
   late TextEditingController _emailController;
   late TextEditingController _usernameController;
   late TextEditingController _passwordController;
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -62,87 +65,106 @@ class _SignInViewState extends State<SignInView> {
                         minWidth: 400,
                       ),
                       child: Center(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Align(
-                              alignment: Alignment.topLeft,
-                              child: Text("Sign In",
-                                  style: TextStyle(
-                                      fontSize: 30,
-                                      fontWeight: FontWeight.bold)),
-                            ),
-                            // TextFormField(
-                            //   decoration: InputDecoration(
-                            //     hintText: "Enter your name",
-                            //     isDense: true,
-                            //     border: OutlineInputBorder(
-                            //       borderRadius: BorderRadius.circular(10),
-                            //     ),
-                            //   ),
-                            //   controller: _emailController,
-                            // ),
-                            // const SizedBox(
-                            //   height: 20,
-                            // ),
-                            TextFormField(
-                              decoration: InputDecoration(
-                                hintText: "Enter your Email",
-                                isDense: true,
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Align(
+                                alignment: Alignment.topLeft,
+                                child: Text("Sign In",
+                                    style: TextStyle(
+                                        fontSize: 30,
+                                        fontWeight: FontWeight.bold)),
                               ),
-                              controller: _emailController,
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            TextFormField(
-                              decoration: InputDecoration(
-                                hintText: "Enter your Password",
-                                isDense: true,
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
+                              const SizedBox(
+                                height: 20,
                               ),
-                              controller: _emailController,
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            FilledButton.icon(
-                              icon: const Icon(Icons.save),
-                              label: const Text('Submit'),
-                              onPressed: () async {
-                                _isLoading.value = true;
-                                await Future.delayed(
-                                    const Duration(seconds: 5));
-                                _isLoading.value = false;
-                              },
-                            ),
-                            RichText(
-                              text: TextSpan(
-                                text: "Don't have an account?",
-                                style: TextStyle(
-                                  color: Colors.black,
-                                ),
-                                children: [
-                                  TextSpan(
-                                    recognizer: TapGestureRecognizer()
-                                      ..onTap = () {
-                                        context.push("/sign-up");
-                                      },
-                                    text: " Sign Up",
-                                    style: const TextStyle(
-                                      color: Colors.deepPurple,
-                                    ),
+                              TextFormField(
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return "Please enter your email";
+                                  }
+                                  return null;
+                                },
+                                decoration: InputDecoration(
+                                  hintText: "Enter your Email",
+                                  isDense: true,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
                                   ),
-                                ],
+                                ),
+                                controller: _emailController,
                               ),
-                            ),
-                          ],
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              TextFormField(
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return "Please enter your password";
+                                  }
+                                  return null;
+                                },
+                                decoration: InputDecoration(
+                                  hintText: "Enter your Password",
+                                  isDense: true,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                controller: _passwordController,
+                              ),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              FilledButton.icon(
+                                icon: const Icon(Icons.save),
+                                label: const Text('Submit'),
+                                onPressed: () async {
+                                  final _route = GoRouter.of(context);
+                                  _formKey.currentState!.validate();
+                                  _isLoading.value = true;
+
+                                  await ref.read(authRepoProvider).signIn(
+                                        email: _emailController.text.trim(),
+                                        password: _passwordController.text,
+                                      );
+
+                                  _route.replace("/");
+                                  // await Future.delayed(
+                                  //     const Duration(seconds: 5));
+                                  // _isLoading.value = false;
+                                },
+                              ),
+                              RichText(
+                                text: TextSpan(
+                                  text: "Don't have an account?",
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                  ),
+                                  children: [
+                                    TextSpan(
+                                      recognizer: TapGestureRecognizer()
+                                        ..onTap = () {
+                                          context.push("/sign-up");
+                                        },
+                                      text: " Sign Up",
+                                      style: const TextStyle(
+                                        color: Colors.deepPurple,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              InkWell(
+                                  onTap: () {
+                                    context.push("/forgot-password");
+                                  },
+                                  child: Text("Forgot Password?")),
+                            ],
+                          ),
                         ),
                       ),
                     ),
