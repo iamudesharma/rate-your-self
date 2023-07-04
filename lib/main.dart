@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'auth/views/sign_in_view.dart';
 import 'routes/app_router.dart';
 
 final supabaseProvider = StateProvider<SupabaseClient>((ref) {
@@ -15,8 +14,7 @@ void main() async {
 
   await Supabase.initialize(
     url: 'https://akjkvcwgiincdtexrhai.supabase.co',
-    anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFramt2Y3dnaWluY2R0ZXhyaGFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODgzMTk5NDIsImV4cCI6MjAwMzg5NTk0Mn0.fps7SbhGysc0nxeOrx235BY0vxZ-yyKVLtXIbw2IHJg',
+    anonKey: 'SUPABASE_ANON_KEY',
   );
   runApp(const ProviderScope(child: MyApp()));
 }
