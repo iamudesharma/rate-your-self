@@ -9,7 +9,7 @@ class HomeView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final packetbase = ref.watch(supabaseProvider);
+    final packetbase = ref.watch(pbProvider);
     return Scaffold(
       body: Center(
         child: Text((packetbase.authStore.model as RecordModel)

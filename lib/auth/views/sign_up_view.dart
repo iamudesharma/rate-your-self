@@ -146,7 +146,7 @@ class _SignUpViewState extends ConsumerState<SignUpView> {
 
                                     _isLoading.value = false;
 
-                                    _route.replace("/");
+                                    _route.replace("/sign-in");
                                   }
                                   // _isLoading.value = true;
                                   // await Future.delayed(

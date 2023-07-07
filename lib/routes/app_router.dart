@@ -58,7 +58,7 @@ GoRouter _appRoute(Ref ref) {
             // top route inside branch
             GoRoute(
               redirect: (context, state) {
-                return ref.read(supabaseProvider).authStore.token != null
+                return ref.read(pbProvider).authStore.model!=null
                     ? null
                     : '/sign-in';
               },

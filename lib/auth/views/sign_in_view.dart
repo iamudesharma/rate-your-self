@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 import 'package:rate_your_self/auth/repo/auth_repo.dart';
+import 'package:rate_your_self/main.dart';
 
 class SignInView extends ConsumerStatefulWidget {
   const SignInView({super.key});
@@ -71,6 +72,11 @@ class _SignInViewState extends ConsumerState<SignInView> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
+                              Text(ref
+                                  .read(pbProvider)
+                                  .authStore
+                                  .isValid
+                                  .toString()),
                               const Align(
                                 alignment: Alignment.topLeft,
                                 child: Text("Sign In",
@@ -132,7 +138,7 @@ class _SignInViewState extends ConsumerState<SignInView> {
                                         password: _passwordController.text,
                                       );
 
-                                  _route.replace("/");
+                                  _route.go("/");
                                   // await Future.delayed(
                                   //     const Duration(seconds: 5));
                                   // _isLoading.value = false;

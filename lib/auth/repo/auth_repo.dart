@@ -1,4 +1,5 @@
 import 'package:pocketbase/pocketbase.dart';
+import 'package:rate_your_self/helpers/logger.dart';
 import 'package:rate_your_self/helpers/toast.dart';
 import 'package:rate_your_self/main.dart';
 // import 'package:supabase_flutter/supabase_flutter.dart';
@@ -7,7 +8,7 @@ import '../../error/error.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' as ri;
 
 final authRepoProvider = ri.Provider<AuthRepo>((ref) {
-  return AuthRepo(ref.read(supabaseProvider));
+  return AuthRepo(ref.read(pbProvider));
 });
 
 final class AuthRepo {
@@ -15,18 +16,25 @@ final class AuthRepo {
 
   AuthRepo(this.pocketbase);
 
-  Future<RecordAuth> signUp(
+  Future<RecordModel> signUp(
       {required String email,
       required String password,
       required String username}) async {
+    final body = <String, dynamic>{
+      "username": username,
+      "email": email,
+      "emailVisibility": true,
+      "password": password,
+      "passwordConfirm": password,
+    };
     try {
-      final RecordAuth res =
-          await pocketbase.collection("users").authWithPassword(
-        email,
-        password,
-        body: {'username': username},
-      );
+      final RecordModel res = await pocketbase.collection("users").create(
+            body: body,
+          );
 
+      logger.i(res.toJson());
+
+      // pocketbase.authStore.save(res.token, res.record);
       SnackBarWidget.showSuccess("Successfully signed up");
       return res;
     } catch (e) {
@@ -47,6 +55,9 @@ final class AuthRepo {
                 email,
                 password,
               );
+
+      logger.i(res.toJson());
+
       SnackBarWidget.showSuccess("Successfully login up");
 
       return res;
