@@ -2,6 +2,7 @@ import 'package:pocketbase/pocketbase.dart';
 import 'package:rate_your_self/helpers/logger.dart';
 import 'package:rate_your_self/helpers/toast.dart';
 import 'package:rate_your_self/main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../error/error.dart';
@@ -13,6 +14,7 @@ final authRepoProvider = ri.Provider<AuthRepo>((ref) {
 
 final class AuthRepo {
   final PocketBase pocketbase;
+  // final SharedPreferences sharedPreferences;
 
   AuthRepo(this.pocketbase);
 
@@ -58,6 +60,15 @@ final class AuthRepo {
 
       logger.i(res.toJson());
 
+      final SharedPreferences preferences =
+          await SharedPreferences.getInstance();
+      preferences.setString("token", res.token);
+      preferences.setString("username", res.record?.data["username"]);
+      preferences.setString("email", res.record?.data["email"]);
+      // preferences.setString("token", res.token);
+
+
+      // pocketbase.authStore.save(res.token, res.record);
       SnackBarWidget.showSuccess("Successfully login up");
 
       return res;

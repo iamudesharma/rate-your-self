@@ -58,7 +58,10 @@ GoRouter _appRoute(Ref ref) {
             // top route inside branch
             GoRoute(
               redirect: (context, state) {
-                return ref.read(pbProvider).authStore.model!=null
+                return ref
+                            .read(sharedPreferencesProvider)!
+                            .getString("token") !=
+                        null
                     ? null
                     : '/sign-in';
               },
@@ -141,7 +144,7 @@ class ScaffoldWithNestedNavigation extends StatelessWidget {
                 ],
                 onDestinationSelected: _goBranch,
               )
-            : SizedBox.shrink(),
+            : const SizedBox.shrink(),
       );
     });
   }

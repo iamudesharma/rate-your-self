@@ -1,29 +1,42 @@
 // import 'package:fetch_client/fetch_client.dart';
+import 'dart:io';
+//
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pocketbase/pocketbase.dart';
-// import 'package:supabase_flutter/supabase_flutter.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 // import 'config/app_config.dart';
 import 'routes/app_router.dart';
 
+final sharedPreferencesProvider = Provider<SharedPreferences?>((ref) {
+  return null;
+});
+
+// import 'package:supabase_flutter/supabase_flutter.dart';
+
+
 final pbProvider = Provider<PocketBase>((ref) {
-  return PocketBase("http://10.0.2.2:8090");
+  return PocketBase(
+      authStore: AuthStore(),
+      "http://${Platform.isAndroid ? "10.0.2.2" : "localhost"}:8090");
 });
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+final SharedPreferences sharedPreferences =
+      await SharedPreferences.getInstance();
   runApp(
     ProviderScope(
       overrides: [
+        sharedPreferencesProvider.overrideWithValue(sharedPreferences),
         pbProvider.overrideWithValue(
           PocketBase(
-            "http://10.0.2.2:8090",
+            "http://${Platform.isAndroid ? "10.0.2.2" : "localhost"}:8090",
             // httpClientFactory:
-            //     kIsWeb ? () => FetchClient(mode: RequestMode.cors) : null,
+            //     kIsWeb ? () => FetchClient(mode: RequestMode.cxors) : null,
           ),
         )
       ],
