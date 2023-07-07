@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rate_your_self/auth/views/forgot_password_view.dart';
 import 'package:rate_your_self/home/profile_view.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 // import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../auth/views/sign_in_view.dart';
@@ -57,7 +58,7 @@ GoRouter _appRoute(Ref ref) {
             // top route inside branch
             GoRoute(
               redirect: (context, state) {
-                return ref.read(supabaseProvider).auth.currentUser != null
+                return ref.read(supabaseProvider).authStore.token != null
                     ? null
                     : '/sign-in';
               },
@@ -104,18 +105,44 @@ class ScaffoldWithNestedNavigation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      
-      body: navigationShell,
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: navigationShell.currentIndex,
-        destinations: const [
-          // CircularProgressIndicator.adaptive
-          NavigationDestination(label: 'Home', icon: Icon(Icons.home)),
-          NavigationDestination(label: 'Profile', icon: Icon(Icons.person_2)),
-        ],
-        onDestinationSelected: _goBranch,
-      ),
-    );
+    return ResponsiveBuilder(builder: (context, sizingInformation) {
+      return Scaffold(
+        body: sizingInformation.isMobile
+            ? navigationShell
+            : Row(children: [
+                NavigationRail(
+                  selectedIndex: navigationShell.currentIndex,
+                  onDestinationSelected: _goBranch,
+                  labelType: NavigationRailLabelType.all,
+                  extended: sizingInformation.isDesktop ? true : false,
+                  destinations: const [
+                    NavigationRailDestination(
+                      label: Text('Home'),
+                      icon: Icon(Icons.home),
+                    ),
+                    NavigationRailDestination(
+                        label: Text('Profile'), icon: Icon(Icons.person_2)),
+                  ],
+                ),
+                const VerticalDivider(thickness: 1, width: 1),
+                // Main content on the right (end)
+                Expanded(
+                  child: navigationShell,
+                ),
+              ]),
+        bottomNavigationBar: sizingInformation.isMobile
+            ? NavigationBar(
+                selectedIndex: navigationShell.currentIndex,
+                destinations: const [
+                  // CircularProgressIndicator.adaptive
+                  NavigationDestination(label: 'Home', icon: Icon(Icons.home)),
+                  NavigationDestination(
+                      label: 'Profile', icon: Icon(Icons.person_2)),
+                ],
+                onDestinationSelected: _goBranch,
+              )
+            : SizedBox.shrink(),
+      );
+    });
   }
 }

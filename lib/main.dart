@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:pocketbase/pocketbase.dart';
+// import 'package:supabase_flutter/supabase_flutter.dart';
 
+// import 'config/app_config.dart';
 import 'routes/app_router.dart';
 
-final supabaseProvider = StateProvider<SupabaseClient>((ref) {
-  return Supabase.instance.client;
+final supabaseProvider = StateProvider<PocketBase>((ref) {
+  return PocketBase("http://10.0.2.2:8090");
 });
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Supabase.initialize(
-    url: 'https://akjkvcwgiincdtexrhai.supabase.co',
-    anonKey: 'SUPABASE_ANON_KEY',
-  );
+  // await Supabase.initialize(
+  //   url: 'https://akjkvcwgiincdtexrhai.supabase.co',
+  //   anonKey: SUPABASE_ANON_KEY,
+  // );
   runApp(const ProviderScope(child: MyApp()));
 }
 
